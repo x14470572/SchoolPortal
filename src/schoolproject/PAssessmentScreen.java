@@ -5,12 +5,54 @@
  */
 package schoolproject;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 /**
  *
  * @author seanb
  */
 public class PAssessmentScreen extends javax.swing.JFrame {
-
+    private ParentMainMenu pMainMenu;
+    private String username;
+    private final String DB_URL = "jdbc:mysql://schoolportal.ck4ehi6goau1.eu-west-1.rds.amazonaws.com:3306/SchoolPortal";
+    private Properties prop = new Properties();
+    private InputStream input = null;
+    private String encryptedData;
+    private char[] decryptedData;
+    private static SecretKeySpec schoolNumber;
+    private static byte[] key;
+    private char[] convertedChar;
+    private String dbusername;
+    private Connection conn = null;
+    private Statement stmt = null;
+    private ResultSet results;
+    private ResultSet results2;
+    private int parentId;
+    private int studentId;
+    private String studentName;
     /**
      * Creates new form PAssessmentScreen
      */
@@ -47,6 +89,7 @@ public class PAssessmentScreen extends javax.swing.JFrame {
         backgroundPanel.setPreferredSize(new java.awt.Dimension(1000, 1000));
         backgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        backBT.setBackground(new java.awt.Color(250, 228, 188));
         backBT.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Pictures/backBT.png"))); // NOI18N
         backBT.setBorder(null);
         backBT.setOpaque(false);
@@ -88,7 +131,9 @@ public class PAssessmentScreen extends javax.swing.JFrame {
         dateCB.setFont(new java.awt.Font("Tw Cen MT", 0, 24)); // NOI18N
         backgroundPanel.add(dateCB, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 370, 250, 50));
 
+        dateBT.setBackground(new java.awt.Color(65, 147, 211));
         dateBT.setFont(new java.awt.Font("Tw Cen MT", 0, 24)); // NOI18N
+        dateBT.setForeground(new java.awt.Color(255, 255, 255));
         dateBT.setText("Select Date");
         dateBT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -147,6 +192,9 @@ public class PAssessmentScreen extends javax.swing.JFrame {
 
     private void backBTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBTActionPerformed
         // TODO add your handling code here:
+        this.setVisible(false);
+         pMainMenu.setVisible(true);
+        
     }//GEN-LAST:event_backBTActionPerformed
 
     private void assessmentsTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assessmentsTxtActionPerformed
@@ -169,40 +217,7 @@ public class PAssessmentScreen extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_dateBTActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(PAssessmentScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PAssessmentScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(PAssessmentScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PAssessmentScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new PAssessmentScreen().setVisible(true);
-            }
-        });
-    }
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel assessmentIcon;
@@ -218,4 +233,119 @@ public class PAssessmentScreen extends javax.swing.JFrame {
     private javax.swing.JTextField noteTF;
     private javax.swing.JTextField noteTxt;
     // End of variables declaration//GEN-END:variables
+    void account(Object account) {
+
+        pMainMenu = (schoolproject.ParentMainMenu) account;
+    }
+    
+    void StudentId(String studentName,int pId){
+        parentId = pId;
+        
+        databaseConnection();
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+
+            conn = DriverManager.getConnection(DB_URL, dbusername, new String(decryptedData));
+            
+           
+            String query = "SELECT Id FROM Students WHERE ParentId = ? ";
+            String query2 = "SELECT Date FROM Assessments WHERE StudentId = ? ";
+            
+            try{
+            conn.setAutoCommit(false);
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, parentId);
+            results = pstmt.executeQuery();
+                 while(results.next()){
+                   studentId =results.getInt("Id");
+                 }
+            
+            PreparedStatement pstmt2 = conn.prepareStatement(query2);
+            
+            pstmt2.setInt(1, studentId);
+
+            results2 = pstmt2.executeQuery();
+            while (results2.next()) {
+                //dbPassword= results2.getString("Password");
+                dateCB.addItem(results2.getString("Date"));
+                
+            }
+                 
+                
+                conn.commit();
+            }catch(SQLException e){
+                System.out.println(e);
+                conn.rollback();
+            }
+            conn.close();
+
+        } catch (ClassNotFoundException ex) { 
+            
+        } catch (SQLException ex) {
+            
+        }
+        
+        
+    }
+    
+    private void databaseConnection() {
+            try {
+
+                //Gets details from properties file
+                input = new FileInputStream("config.properties");
+                prop.load(input);
+                dbusername = prop.getProperty("pusername");
+                encryptedData = prop.getProperty("ppassword");
+                decryptedData = decrypt(encryptedData);
+
+            } catch (FileNotFoundException ex) {
+                //Logger.getLogger(SignInScreen.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+
+            }
+    }
+
+    private char[] decrypt(String encryptedData) {
+        String schoolPostcode = "LdU6_UF}?Z3Pnwa3";
+        schoolPostCodeGen(schoolPostcode);
+
+        try {
+            Cipher c = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            c.init(Cipher.DECRYPT_MODE, schoolNumber);
+            c.doFinal(Base64.getDecoder().decode(encryptedData));
+            byte[] convertedByte = c.doFinal(Base64.getDecoder().decode(encryptedData));
+            convertedChar = new char[convertedByte.length];
+            for (int i = 0; i < convertedByte.length; i++) {
+                convertedChar[i] = (char) convertedByte[i];
+            }
+        } catch (NoSuchAlgorithmException ex) {
+
+        } catch (NoSuchPaddingException ex) {
+
+        } catch (InvalidKeyException ex) {
+
+        } catch (IllegalBlockSizeException ex) {
+            Logger.getLogger(SignInScreen.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (BadPaddingException ex) {
+            Logger.getLogger(SignInScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return convertedChar;
+    }
+
+    private void schoolPostCodeGen(String postCode) {
+        MessageDigest sha = null;
+        try {
+            key = postCode.getBytes("UTF-8");
+            sha = MessageDigest.getInstance("SHA-1");
+            key = sha.digest(key);
+            key = Arrays.copyOf(key, 16);
+            schoolNumber = new SecretKeySpec(key, "AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

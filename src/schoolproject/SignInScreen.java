@@ -62,6 +62,8 @@ final class SignInScreen extends javax.swing.JFrame {
     private ResultSet results2;
     private String encryptedPW;
     private String dbPassword;
+    private String query;
+    private String query2;
     private adminMainMenu adminMainMenu = new adminMainMenu();
     private ParentMainMenu parentMainMenu = new ParentMainMenu();
     private TeacherMainMenu teacherMainMenu = new TeacherMainMenu();
@@ -353,6 +355,9 @@ final class SignInScreen extends javax.swing.JFrame {
                 dbusername = prop.getProperty("adminusername");
                 encryptedData = prop.getProperty("adminpw");
                 decryptedData = decrypt(encryptedData);
+                
+                query = "SELECT Username FROM AdminAccounts WHERE Username = ? ";
+                query2 = "SELECT Password FROM AdminAccounts WHERE Username = ? ";
 
             } catch (FileNotFoundException ex) {
                 //Logger.getLogger(SignInScreen.class.getName()).log(Level.SEVERE, null, ex);
@@ -369,6 +374,8 @@ final class SignInScreen extends javax.swing.JFrame {
                 dbusername = prop.getProperty("tusername");
                 encryptedData = prop.getProperty("tpassword");
                 decryptedData = decrypt(encryptedData);
+                query = "SELECT Username FROM TeacherAccounts WHERE Username = ? ";
+                query2 = "SELECT Password FROM TeacherAccounts WHERE Username = ? ";
 
             } catch (FileNotFoundException ex) {
                 //Logger.getLogger(SignInScreen.class.getName()).log(Level.SEVERE, null, ex);
@@ -384,6 +391,8 @@ final class SignInScreen extends javax.swing.JFrame {
                 dbusername = prop.getProperty("pusername");
                 encryptedData = prop.getProperty("ppassword");
                 decryptedData = decrypt(encryptedData);
+                query = "SELECT Username FROM ParentAccounts WHERE Username = ? ";
+                query2 = "SELECT Password FROM ParentAccounts WHERE Username = ? ";
 
             } catch (FileNotFoundException ex) {
                 //Logger.getLogger(SignInScreen.class.getName()).log(Level.SEVERE, null, ex);
@@ -419,8 +428,7 @@ final class SignInScreen extends javax.swing.JFrame {
             conn = DriverManager.getConnection(DB_URL, dbusername, new String(decryptedData));
             
            
-            String query = "SELECT Username FROM AdminAccounts WHERE Username = ? ";
-            String query2 = "SELECT Password FROM AdminAccounts WHERE Username = ? ";
+            
             
             try{
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -470,6 +478,7 @@ final class SignInScreen extends javax.swing.JFrame {
             
             this.setVisible(false);
             parentMainMenu.setVisible(true);
+            parentMainMenu.Username(username);
         }else{
             popUp.setVisible(true);
         }
