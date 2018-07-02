@@ -30,10 +30,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- *
- * @author seanb
- */
 public class ParentMainMenu extends javax.swing.JFrame {
 
     private String username;

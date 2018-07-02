@@ -5,10 +5,6 @@
  */
 package schoolproject;
 
-/**
- *
- * @author seanb
- */
 public class EditProfileScreen extends javax.swing.JFrame {
        private String type;
        

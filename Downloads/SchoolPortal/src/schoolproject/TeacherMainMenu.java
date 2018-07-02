@@ -5,10 +5,7 @@
  */
 package schoolproject;
 
-/**
- *
- * @author seanb
- */
+
 public class TeacherMainMenu extends javax.swing.JFrame {
 
     /**

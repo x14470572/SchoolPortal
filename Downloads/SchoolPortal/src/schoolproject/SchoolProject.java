@@ -26,10 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
-/**
- *
- * @author seanb
- */
+
 public final class SchoolProject {
     public static String ALGO = "AES";
     public static String keyValue = "LdU6_UF}?Z3Pnwa3";

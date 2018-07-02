@@ -5,10 +5,6 @@
  */
 package schoolproject;
 
-/**
- *
- * @author seanb
- */
 public class TAssessmentScreen extends javax.swing.JFrame {
 
     /**

@@ -5,10 +5,6 @@
  */
 package schoolproject;
 
-/**
- *
- * @author seanb
- */
 public class TReportScreen extends javax.swing.JFrame {
 
     /**

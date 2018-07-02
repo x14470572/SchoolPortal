@@ -5,10 +5,6 @@
  */
 package schoolproject;
 
-/**
- *
- * @author seanb
- */
  final class LoadScreen extends javax.swing.JFrame {
      
      private String button;

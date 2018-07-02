@@ -5,10 +5,7 @@
  */
 package schoolproject;
 
-/**
- *
- * @author seanb
- */
+
 public final class PReportScreen extends javax.swing.JFrame {
 
     /**

@@ -37,10 +37,7 @@ import static schoolproject.SchoolProject.keyValue;
 import static schoolproject.SchoolProject.setKey;
 import sun.misc.BASE64Encoder;
 
-/**
- *
- * @author seanb
- */
+
 final class SignInScreen extends javax.swing.JFrame {
 
     private final String DB_URL = "jdbc:mysql://rds-mysql-tutorial.conn5z28bnte.eu-west-1.rds.amazonaws.com:3306/SchoolPortal";

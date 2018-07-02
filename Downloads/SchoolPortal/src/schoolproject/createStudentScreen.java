@@ -31,10 +31,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- *
- * @author seanb, markent
- */
 public class createStudentScreen extends javax.swing.JFrame {
     private adminMainMenu aMainMenu;
     private final String DB_URL = "jdbc:mysql://rds-mysql-tutorial.conn5z28bnte.eu-west-1.rds.amazonaws.com:3306/SchoolPortal";

@@ -5,10 +5,7 @@
  */
 package schoolproject;
 
-/**
- *
- * @author seanb, markent
- */
+
 public class adminMainMenu extends javax.swing.JFrame {
     private String username;
     private EditProfileScreen eprofile = new EditProfileScreen();
